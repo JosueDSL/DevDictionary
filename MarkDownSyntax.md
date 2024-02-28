@@ -12,7 +12,7 @@ Use `#` to denote headings. The number of `#` symbols indicates the heading leve
 ```markdown
 *Italic Text*
 **Bold Text**
-
+```
 # Heading 1
 ## Heading 2
 ### Heading 3
