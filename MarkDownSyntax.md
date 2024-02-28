@@ -37,7 +37,7 @@ Use `[text](url)` syntax to create links.
 `[Visit Josue's website](https://www.josueds.me)`
 [Visit Josue's website](https://www.josueds.me)
 ## Images
-`Use ![alt text](image_url) syntax to insert images.`
+Use `![alt text](image_url)` syntax to insert images.
 
 ### Example
 `![Image](/assets/images/tux.png)`
@@ -49,8 +49,8 @@ Use `>` to denote blockquotes.
 > This is a blockquote.
 
 ## Code Blocks:
-- Use triple backticks ``` for inline code and code blocks, don't forget to close the code blocks!.
-- Optionally specify the language after the opening triple backticks for syntax highlighting.
+- Use single backticks ` for inline code and triple ``` for code blocks, don't forget to close the code blocks!.
+- Optionally specify the language after the opening triple backticks for syntax highlighting. As: ```python
 
 ### Example:
 Inline code: `print("Hello, World!")`
