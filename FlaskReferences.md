@@ -1,2 +1,3 @@
 Test merge
-git 
+git
+Lets test it out
