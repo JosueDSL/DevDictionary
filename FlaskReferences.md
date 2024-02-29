@@ -6,3 +6,4 @@ Now removing what you did
 okay still testing
 we are merging someting
 THIS IS SOMEONELSES COMMIT, rebase bellow
+Im making a rebase commit
