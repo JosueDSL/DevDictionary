@@ -116,7 +116,7 @@ def example(request):
 Create models that will storage information to their Django integraded database (model).
 Each model could be considered as a table.
 
-At: PROJECT_NAME > models.py
+At: APP_NAME > models.py
 ```Python
 from django.db import models
 # Create your models here.
@@ -153,10 +153,12 @@ Check Types of fields at **Django documentation:** [Django Type Fields](https://
 
 ## Model Migration - Update
 At: PROJECT_NAME > level
-**Run:** To create the app database after creating the model, also after every update of the models, it creates a migration instruction to the db
+To create the app database after creating the model, also after every update of the models, it creates a migration instruction to the db
+**Run:** 
 `python manage.py makemigrations`
 
-After the migrations of the new models have been made we need to apply those changes to the db by running. It applies the migrations
+After the migration instructions of the new models have been made we need to apply those changes to the database by running. 
+Apply the changes running:
 `python manage.py migrate`
 
 ## Model ManyToMany Relationships
