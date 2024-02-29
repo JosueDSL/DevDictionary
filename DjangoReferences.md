@@ -5,19 +5,19 @@ Useful reference: [Django Official Documentation](https://docs.djangoproject.com
 ## Table of Contents:
 
 0. ### Fundamental Components
-    - [Virtual Environment](#virtual-environment)
+    - [Virtual Environment](#virtual-enviroment)
     - [Install Django](#install-django)
     
-1. ## Start Django Project
-    - [Create Django Project](#create-django-project)
-    - [Create Django App](#create-django-app)
-    - [Run Local Server](#run-local-server)
+1. ## [Start Django Project](#start-django-project)
+    - [Create Django Project](#start-django-project)
+    - [Create a Django App](#create-a-django-app)
+    - [Run Local Server](#runserver)
 
-2. # Initial Steps
-    - [Project Routes Configuration](#project-routes-configuration)
-    - [Project URLs Configuration](#project-urls-configuration)
-    - [App Views Configuration](#app-views-configuration)
-    - [App URLs Configuration](#app-urls-configuration)
+2. # [Initial Steps](#initial-steps)
+    - [Project Routes Configuration](#project-routes)
+    - [Project URLs Configuration](#project-urls)
+    - [App Views Configuration](#app-views)
+    - [App URLs Configuration](#app-urls)
 
 3. ### Glossary
     - [APP LEVEL](#app-level)
@@ -90,6 +90,33 @@ Set the initial views also reference **Reference Glossary > APP LVL > views.py**
 ## APP Urls
 Set the URLS paths also reference **Reference Glossary > APP LVL > urls.py**
 
+# Aplication Logic
+- ### Session Managment
+
+## Middleware and Session Managment
+
+### Session Managment
+**Consider the following esceneario:**
+
+```python
+def example(request):
+    if "input_list" not in request.session:
+        request.session["input_list"] = [] # If the list is null 
+        # Add an {% empty %} tag inside the loop to consider the empty case
+    
+    return render(request, "APP_NAME/foo.html", {
+        "input_list": request.session["input_list"]
+    })
+
+```
+
+# Data Models and Databases
+
+## Table creation
+At: PROJECT_NAME > level
+**First run:** To create the app database
+`python manage.py migrate`
+
 
 # Glossary
 
@@ -112,6 +139,7 @@ Will set the url directioning and also the Url Path / for the application
 from django.urls import path
 from . import views
 
+app_name = "APP_NAME" # Important! so I can use the syntax: {% url 'app_name:index'  %} and avoid colitions
 urlpatterns = [
     #path("", )
     path("", views.index, name="index"),
@@ -160,8 +188,42 @@ urlpatterns = [
 ]
 ```
 
+## Special Classes and methods
 
-## Special Classes
+### FORMS Classes
+To use form classes from django:
+```python
+# Import module
+from django import forms
+class NewForm(forms.Form):
+    form_string_input = forms.CharField(label="New String Input")
+    form_int_input = forms.IntegerField(label="New Int Input", min_value=1, max_value=100)
+
+# Create class instance as follows and pass it to the template
+ 
+def example(request):
+    return render(request, "APP_NAME/foo.html", {
+        "form": NewForm()
+    })
+```
+
+### POST request request.method()
+The sintax inside the function is as follows:
+```python
+# User list of strings (example of use case):
+string_list = ["coco", "mango"]
+
+def example(request):
+    if request.method == "POST":
+        # Process the result of that request
+        form = NewForm(request.POST)
+        if form.is_valid():  # Verify the input data, if is true to the conditions set at the Class lvl return true
+           user_string = form.cleaned_data["form_string_input"] # This property gives me access to all the information the user submitted
+           request.session["string_list"] += [string_list] # Asuming there was a migration to create the table string_list
+           # Second example
+           string_list.append(user_string) # Add the user input to the list !IF THERE IS NOT DATABASE CASE
+```         
+
 
 ### render()
 It will render an HTML template
@@ -175,14 +237,25 @@ First import:
 
 ### HttpResponse()
 It returns some http response as with the string content as a HTML <h1>
-
 First import:
-``
+
 ```python
 # DONT FORGET TO IMPORT THE MODULE!
 from django.http import HttpResponse
 def example(request):
     return HttpResponse("Hello this is a new app!")
+```
+
+## Good Practices
+
+### Not hardcoding
+The reverse() function allows you to enter the relative url related to urls.py
+```python
+# Include the modules
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
+return HttpResponseRedirect(reverse("APP_NAME:index"))
 ```
 
 ## File Structure
@@ -241,3 +314,54 @@ The template tags are defined by usign `{% %}` syntax inside the HTML code.
 {% block scripts %}
 <script src="{% static 'APP_NAME/JS_FILE.js' %}"></script>
 {% endblock %} <!-- -->
+```
+
+**Control Structures:**
+Tags to create control structures such as if statements, for loops, and while loops. For example:
+
+```HTML
+{% if user.is_authenticated %}
+    Welcome, {{ user.username }}!
+{% else %}
+    Please log in.
+{% endif %}
+```
+
+** Template Inheritance: **
+Django supports template inheritance, allowing you to create a base template with common elements and extend it in child templates. For example:
+Layout:
+```HTML
+<!-- base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}My Site{% endblock %}</title>
+</head>
+<body>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>
+```
+Child.html:
+```HTML
+<!-- child.html -->
+{% extends 'base.html' %}
+
+{% block title %}My Child Page{% endblock %}
+
+{% block content %}
+    <h1>Hello, World!</h1>
+{% endblock %}
+```
+## Passing Context Variables to template
+Passing context variables to a template would look like this at our views.py
+
+```python
+return render(request, 'timerApp/home.html', {
+    "message": message, "timers": timers 
+    }) 
+```
+Inside the HTML template those variables can be referenced by their variable name as the first html example above, and also access their properties.
+
