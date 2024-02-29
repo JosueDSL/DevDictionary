@@ -443,6 +443,7 @@ my_django_project/
 ├── templates/APP_NAME
 │                 └── (HTML templates)
 ├── manage.py
+|-- virtual_enviroment
 └── requirements.txt
 ```
 ## Template Tags
