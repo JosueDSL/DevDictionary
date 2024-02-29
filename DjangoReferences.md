@@ -396,11 +396,11 @@ First import:
 ```
 
 ### HttpResponse()
-It returns some http response as with the string content as a HTML <h1>
-First import:
+It returns some http response as with the string content as a HTML `<h1>`
 
+First import:
 ```python
-# DONT FORGET TO IMPORT THE MODULE!
+# Include the modules
 from django.http import HttpResponse
 def example(request):
     return HttpResponse("Hello this is a new app!")
