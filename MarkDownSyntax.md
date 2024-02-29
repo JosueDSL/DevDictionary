@@ -64,26 +64,24 @@ def greet():
 ## Horizontal Rules:
 -----------------
 
-Use `---` or `___` to create horizontal rules.
+Use `---` or `___` or `* * *` to create horizontal rules.
 
 ### Example:
 
 * * *
+___
+- - -
 
 ## Tables:
--------
-
 Use pipe `|` to separate columns and hyphens `-` to separate the header row from the content rows.
 
 ### Example:
-
+```markdown
 | Header 1 | Header 2 |
 | --- | --- |
 | Content 1 | Content 2 |
-
+```
 ## Task Lists:
------------
-
 Use `- [ ]` for an incomplete task and `- [x]` for a completed task.
 
 ### Example:
