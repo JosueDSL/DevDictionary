@@ -112,10 +112,167 @@ def example(request):
 
 # Data Models and Databases
 
-## Table creation
+## Model Creation
+Create models that will storage information to their Django integraded database (model).
+Each model could be considered as a table.
+
+At: PROJECT_NAME > models.py
+```Python
+from django.db import models
+# Create your models here.
+class NewModel(models.Model):
+    username = models.CharField(max_length=32)
+    email = models.CharField(max_length=64)
+    age = models.IntegerField(max_value=140)
+
+    # Return string representations for queries
+    def __str__(self):
+       return f"USERNAME: {self.username} EMAIL:{self.email} AGE: {self.age}" 
+
+```
+
+### Model Types of Fields
+Check Types of fields at **Django documentation:** [Django Type Fields](https://docs.djangoproject.com/en/5.0/ref/models/fields/)
+
+* CharField:       -Used to store a string of characters of a specified length.
+* TextField:       -Suitable for storing large amounts of text data.
+* IntegerField:    -Stores integer values.
+* BigIntegerField: -Similar to IntegerField but can store larger values.
+* BooleanField:    -Represents a boolean (True/False) value.
+* DateField:       -Stores a date (year, month, day).
+* DateTimeField:   -Stores a date and time.
+* DecimalField:    -Used for storing decimal numbers with a fixed precision and scale.
+* FloatField:      -Stores floating-point numbers.
+* ForeignKey:      -Establishes a many-to-one relationship with another model.
+* ManyToManyField: -Represents a many-to-many relationship with another model.
+* OneToOneField:   -Establishes a one-to-one relationship with another model.
+* EmailField:      -Specifically designed to store email addresses.
+* ImageField:      -Used for uploading and storing image files.
+* FileField:       -Stores file paths.
+
+
+## Model Migration - Update
 At: PROJECT_NAME > level
-**First run:** To create the app database
+**Run:** To create the app database after creating the model, also after every update of the models, it creates a migration instruction to the db
+`python manage.py makemigrations`
+
+After the migrations of the new models have been made we need to apply those changes to the db by running. It applies the migrations
 `python manage.py migrate`
+
+## Model ManyToMany Relationships
+**on_delete=models.CASCADE:** Related contents of joined or shared ForeinKeys would cascade on deletion
+
+```python
+class Airport(models.Model):
+    code = models.CharField(max_length=3)
+    city = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f"{self.city} ({self.code})"
+
+
+class Flight(models.Model):
+    origin = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="departures")
+    destination = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="arrivals")
+    duration = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.id} : {self.origin} to {self.destination}"
+
+
+class Passenger(models.Model):
+    first = models.CharField(max_length=64)
+    last = models.CharField(max_length=64)
+    flights = models.ManyToManyField(Flight, blank=True, related_name="passengers")
+
+    def __str__(self):
+        return f"{self.first} {self.last}"
+```
+
+## Model Query
+You can query the db by using python sintax as follows
+```python
+from APP_NAME.models import MODEL_NAME or * # Where the app name will be the intance model as module and model name the name of the model interested to link
+# Inserting data
+n = NewModel(key=value, key=value, key=value) # Where the key value pairs would be replaced by their items
+f.save()
+# Query all the content model
+n = NewModel.objects.all()
+n # Would print all the content 
+n = n.first() # First object in the model
+n.username , n.email, n.age # Once accessed you can interact with its properties/values
+NewModel.objects.filter(key=value) # Filter values
+NewModel.objects.filter(key=value).first() # Filter values and gives first element
+NewModel.objects.get(key=value) # If you know there is only gonna be ONE! A SINGLE ONE # if non or more than one will throw an error
+NewModel.objects.exclude(key=value).all()
+# Example:
+def flight(request, flight_id):
+    try:
+        flight = Flight.objects.get(id=flight_id)
+    except Flight.DoesNotExist:
+        raise Http404("Flight not found.")
+    return render(request, "flights/flight.html", {
+        "flight": flight,
+        "passengers": flight.passengers.all(),
+        "non_passengers": Passenger.objects.exclude(flights=flight).all()
+    })
+```
+
+# Users - Authentication
+Every user automatically has within their request. object an user attribute asociatted to them. And that user object has an .is_authenticated attribute too:
+```python
+def index(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("login")) # If false return to the login view
+
+def login_view(request): # Right naming
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "users/login.html", {
+                "message": "Invalid credentials"
+            })
+
+def logout_view(request):    
+    pass
+```
+
+**Useful authentication functions:**
+```python
+from django.contrib.auth import authenticate, login, logout
+```
+
+# DJANGO ADMIN APP
+The admin app will allow you to manipulate data from the databases with an UI
+
+You will need to create a superuser first in order to access the admin model
+**Run:** `python manage.py createsuperuser`
+Enter required fields and take note of them
+
+**Inside the APP. AT:** APP_NAME > admin.py
+```python
+from django.contrib import admin #Default
+from .models import MODELS_NAMES, MODEL_NAME_2
+
+# Register the models here so you can access them from the admin page
+class NewAdminClass(admin.ModelAdmin):
+    list_display = ("id","username", "age") # Input fields related to their class instance variables
+
+class SecondAdminClass(admin.ModelAdmin):
+    filter_horizontal = ("inputs", "", "") # Filters_orizontal gives you a different interface
+
+admin.site.register(MODELS_NAMES, NewAdminClass) #Include the class referencing those values you want to display
+admin.site.register(MODEL_NAME_2, SecondAdminClass) 
+
+```
+**ACCESS ADMIN PORTAL**
+Navigate to: 127.0.0.1:8000/admin
+
 
 
 # Glossary
@@ -159,6 +316,9 @@ Aka "Main"
 
 ### PROJECT manage.py
 Will allow you to execute different commands as "`python3 manage.py runserver`".
+**usefull commands with manage.py:**
+Enter projects's python shell by running: `python manage.py shell`
+
 
 ### PROJECT settings.py
 Important configuration settings as:
@@ -285,6 +445,9 @@ my_django_project/
 ```
 ## Template Tags
 The template tags are defined by usign `{% %}` syntax inside the HTML code.
+
+- **Template variables:** {{ messages }}
+- **Template tags:** {% for message in messages %}
 
 **The most common template tags are:**
 ```HTML
