@@ -136,7 +136,7 @@ bellow the "`app.config['SECRET_KEY'] = "devflask123"`" include:
 ```python
 app.config['SECRET_KEY'] = "devflask123"
 # Include
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{{DB_NAME}}'
 db.init_app(app)
 ```
 
@@ -217,7 +217,7 @@ db.execute("INSERT INTO registrants (name, sport) VALUES(?, ?)", name, sport)
 
 # Glossary
 
-# Blueprints
+## Blueprints
 Allows modularity within our code by seting up different routes for their different purpouses.
 In this way we can have a file for our views, nother one for related authentication, etc.
 Example: 
@@ -251,55 +251,61 @@ def create_app():
     return app
 ```
 
-### FULL INIT FILE
+## FULL INIT FILE
 ```python
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
 
+# Initialize the database
 db = SQLAlchemy()
-DB_NAME = "database.db"
-
+DB_NAME = "database_name.db"
 
 def create_app():
+    # Initialize the Flask app
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = "helloworld"
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{{DB_NAME}}'
+    app.config['SECRET_KEY'] = 'rootadmin1234' # Change
+    
+    # Set the database URI
+    basedir = path.abspath(path.dirname(__file__))
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + path.join(basedir, DB_NAME)
     db.init_app(app)
-
+    
+    # Include MVT components and auth
     from .views import views
     from .auth import auth
 
-    app.register_blueprint(views, url_prefix="/")
-    app.register_blueprint(auth, url_prefix="/")
+    # Register the blueprints
+    app.register_blueprint(views, url_prefix='/')
+    app.register_blueprint(auth, url_prefix='/')
 
+    # Create database and intialize models
     from .models import User
-
+    
     create_database(app)
 
     login_manager = LoginManager()
-    login_manager.login_view = "auth.login"
+    login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
 
     @login_manager.user_loader
     def load_user(id):
         return User.query.get(int(id))
-
     return app
 
 def create_database(app):
     if not path.exists('website/' + DB_NAME):
         with app.app_context():
             db.create_all()
-        print('Created Database!')
+        print('Database Successfully Initialized!')
 ```
 
-### FULL MODELS FILE
+## FULL MODELS FILE
 ```python
 from . import db
 from flask_login import UserMixin
-from sql_alchemy.sql import func
+from sqlalchemy.sql import func
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -363,7 +369,7 @@ project/
 │   ├── models.py
 │   └── templates/
 │       └── index.html
-├── config.py
+# ├── config.py
 ├── requirements.txt
-└── run.py
+└── run.py     # (app.py)
 ```
