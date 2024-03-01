@@ -136,7 +136,7 @@ bellow the "`app.config['SECRET_KEY'] = "devflask123"`" include:
 ```python
 app.config['SECRET_KEY'] = "devflask123"
 # Include
-app.config['SQL_ALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
 db.init_app(app)
 ```
 
@@ -145,9 +145,10 @@ db.init_app(app)
 **create_database function:**
 ```python
 def create_database(app):
-    if not path.exists("website/" + DB_NAME): # website/ reffers to the package path
-        db.create_all(app=app)
-        print("Created database!")
+    if not path.exists('website/' + DB_NAME):
+        with app.app_context():
+            db.create_all()
+        print('Created Database!')
 ```
 and include the new function inside the create_app function:
 ```python
@@ -160,9 +161,10 @@ Inside out website/ dir, create models.py. In this file we will place all the mo
 **Creating the user model**
 Include:
 ```python
+# Include: 
 from . import db
 from flask_login import UserMixin
-from sql_alchemy.sql import func
+from sqlalchemy.sql import func
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -170,24 +172,44 @@ class User(db.Model, UserMixin):
     ...
 ```
 Stop for a second to consider the information we need from the user.
+Also **Reference FULL MODEL FILE** for a full example.
 
-
-
-
-
-
-
-Create the app by adding flask to the project and generating the app:
+Include the functions to the init file and also include the login_manager.
 ```python
-#include module and functions
-from flask import Flask, render_template, request
+    app.register_blueprint(auth, url_prefix="/")
+
+    from .models import User
+
+    create_database(app)
+
+    login_manager = LoginManager()
+    login_manager.login_view = "auth.login"
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
+
+    return app
+```
+### IF NOT MODELS - Relational Databases
+include directly to the __init__ file the database path as follows:
+```python
+# include database
+import sqlite3
 
 app = Flask(__name__)
 
-@app.route("/")
-def index():
-    return render_template("index.html")
+db = SQL("sqlite:///database_name.db")
 ```
+Then just by referencing the db. we can perform queries as:
+```python
+db.execute("DELETE FROM registrants WHERE id = ?", id)
+db.execute("INSERT INTO registrants (name, sport) VALUES(?, ?)", name, sport)
+...
+```
+
+
 
 
 
@@ -232,17 +254,18 @@ def create_app():
 ### FULL INIT FILE
 ```python
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy 
+from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
 
+
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = "devflask123"
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_NAME}"
+    app.config['SECRET_KEY'] = "helloworld"
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{{DB_NAME}}'
     db.init_app(app)
 
     from .views import views
@@ -257,13 +280,19 @@ def create_app():
 
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
 
     return app
 
 def create_database(app):
-    if not path.exists("website/" + DB_NAME):
-        db.create_all(app=app)
-        print("Created database!")
+    if not path.exists('website/' + DB_NAME):
+        with app.app_context():
+            db.create_all()
+        print('Created Database!')
 ```
 
 ### FULL MODELS FILE
@@ -285,6 +314,26 @@ is only used when request method is GET, is a dictionary that contains all your 
 
 ## request.from
 When using post you must use request.form
+
+## flash()
+Flash takes a string as a parameter and an optional category argument.
+The for categories available are:
+1.'info'
+2.'sucess'
+3.'warning'
+4.'error'
+**Template usage:**
+```HTML
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %} 
+```
 
 ## Default Route Methods
 by default the `@app.route()` is set to GET
