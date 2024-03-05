@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h1>Welcome to our website!</h1>
+    <p>This is the home page. You have been logged in!</p>
+
+    <h4>To logout, click <a href="{{ url_for('auth.logout') }}">here</a></h4>
+    
+{% endblock %}

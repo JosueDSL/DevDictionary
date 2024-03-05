@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block content %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h1>Login Page!</h1>
+    <h3>Please login to access the home page</h3>
+
+    <form method="POST">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="email" name="email" minlength="4" maxlength="150">
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" minlength="4" maxlength="150">
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    <div>
+        <label>Don't have an account?</label>
+        <a href="{{ url_for('auth.sign_up') }}">Sign-Up</a>
+    </div>
+{% endblock %}
