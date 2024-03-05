@@ -1,14 +1,12 @@
-from flask import Blueprint, flash, render_template, request, redirect, url_for
-from flask_login import current_user, login_required
-from . import db
-from .models import User
-
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
+from flask_login import login_required
 views = Blueprint("views", __name__)
 
-@views.route("/home")
+@views.route("/home", methods=["GET", "POST"])
 @login_required
 def home():
-    return "home"
+    if request.method == "POST":
+        print('POST Request Received to /home!!!!!!')
 
-def hello():
-    return "hello"
+    #GET    
+    return render_template("home.html")

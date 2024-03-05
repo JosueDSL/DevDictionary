@@ -28,6 +28,9 @@ or `pip install package_name`
 **Install SQLAlchemy**
 `pip3 install Flask-SQLAlchemy`
 
+**Install WTF Forms**
+`pip3 install flask-wtf`
+
 # Flask Initialization
 1.Follow the setup, create a venv at the project level and finish the setup
 2.Create a website folder, which will be out python package
@@ -192,28 +195,108 @@ Include the functions to the init file and also include the login_manager.
 
     return app
 ```
-### IF NOT MODELS - Relational Databases
-include directly to the __init__ file the database path as follows:
+
+### Model Column Types
+We use the following column types:
+
+* String(N), where N is the maximum number of characters
+* Integer, representing a whole number
+
+Column can take some other parameters:
+
+* unique: when True, the values in the column must be unique
+* index: when True, the column is searchable by its values
+* primary_key: when True, the column serves as the primary key
+
+### Model One to Many
+We declare a one-to-many relationship between Book and Review by creating the following field in the Book model:
 ```python
-# include database
-import sqlite3
-
-app = Flask(__name__)
-
-db = SQL("sqlite:///database_name.db")
+class Book(db.Model):
+    reviews = db.relationship('Review', backref='book', lazy='dynamic')
+class Reader(db.Model):
+    reviews = db.relationship('Review', backref='reviewer', lazy = 'dynamic')
 ```
-Then just by referencing the db. we can perform queries as:
+where
+* the first argument denotes which model is to be on the ‘many’ side of the relationship: `Review.`
+`backref = 'book'` establishes a book attribute in the related class (in our case, class Review) which will serve to refer back to the related `Book` object. `*lazy = dynamic` makes related objects load as SQLAlchemy’s query objects.
+Here 'Review' is linking to its table, extracting that field
+
+But that does not completely specify our one-to-many relationship. We additionally have to specify what the foreign keys are for the model on the ‘many’ side of the relationship. 
 ```python
-db.execute("DELETE FROM registrants WHERE id = ?", id)
-db.execute("INSERT INTO registrants (name, sport) VALUES(?, ?)", name, sport)
-...
+class Review(db.Model):
+    ...
+    #Note the lower case here: 'book.id' instead of 'Book.id'
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id')) #foreign key column
+
+    reviewer_id = db.Column(db.Integer, db.ForeignKey('reader.id'))
+    #get a printout for Review objects
+    def __repr__(self):
+        return "Review: {} stars: {}".format(self.text, self.stars)
+```
+```SQL
+CREATE TABLE review (
+        id INTEGER NOT NULL, 
+        stars INTEGER, 
+        text VARCHAR(200), 
+        book_id INTEGER, 
+        reviewer_id INTEGER, 
+        PRIMARY KEY (id), 
+        FOREIGN KEY(book_id) REFERENCES book (id), 
+        FOREIGN KEY(reviewer_id) REFERENCES reader (id)
+);
 ```
 
+### initializing the database
+```shell
+$ python3
+>>> from app import db
+>>> db.create_all()
+```
+Or:
+From within the application file.
 
+After all the models have been specified the database is initialized by adding db.create_all() to the main program. The command is written after all the defined models.
+### Model Entries for relationships
+```python
+rev1 = Review(id = 435, text = 'This book is amazing...', stars = 5, reviewer_id = r1.id, book_id = b1.id)
+```
+reference the variable inside the
 
+# Forms - WTF Forms
+First install WTF Froms library by running:
+`pip install flask-wtf`
 
+Import the package:
+```python
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, Email, EqualTo
+```
 
-
+### Form format:
+```python
+lass RegistrationForm(FlaskForm):
+  username = StringField('Username', validators=[DataRequired()])
+  email = StringField('Email', validators=[DataRequired(), Email()])
+  password = PasswordField('Password', validators=[DataRequired()])
+  password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
+  submit = SubmitField('Register')
+```
+### Form methods
+```python
+# registration route
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+  form = RegistrationForm(csrf_enabled=False)
+  if form.validate_on_submit():
+    # define user with data from form here:
+    user = User(username=form.username.data, email=form.email.data)
+    # set user's password here:
+    user.set_password(form.password.data)
+    db.session.add(user)
+    db.session.commit()
+  return render_template('register.html', title='Register', form=form)
+```
 
 # Glossary
 
@@ -313,6 +396,24 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
+```
+
+## Libraries, Dependencies, Packages
+The most commonly used Classes, Functions and packages:
+```python
+from datetime import datetime
+# Flask
+from flask import Flask, render_template, request, redirect, url_for, flash
+# SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+# Flask-Login
+from flask_login import UserMixin, LoginManager, login_required, login_user, current_user
+# Flask-WTForms
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms.validators import DataRequired, Email, EqualTo
+# Password check and hashing
+from werkzeug.security import generate_password_hash, check_password_hash
 ```
 
 ### request.args
