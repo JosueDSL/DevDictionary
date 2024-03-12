@@ -20,9 +20,42 @@ Welcome to the basic git workflow:
 `git commit --amend` To avoid creating a new commit, you could create your changes, stage them with `git add` and then type the command `git commit --amend` to update your previous commit.
 
 ## git log
-`git log` shows a list of all previous commits
-`git log --oneline` shows the list of commits in one line format.
-`git log --oneline --graph` Displays a visual representation of how the branches and commits were created
+* `git log` shows a list of all previous commits
+Example:
+```bash
+commit f516bd3053cc336c743405c4c3badcae4651af0e (HEAD -> main, origin/main)
+Author: JosueDSL <josuedesantosl@gmail.com>
+Date:   Tue Mar 12 14:39:33 2024 -0600
+
+    Git commands and best practices update
+
+commit a3626e84f1f2e2feb94c488284cb047ae8b61168
+Author: JosueDSL <josuedesantosl@gmail.com>
+Date:   Tue Mar 5 12:24:43 2024 -0600
+
+    include them
+    ...
+```
+* `git log --oneline` shows the list of commits in one line format.
+Example:
+```zsh
+f516bd3 (HEAD -> main, origin/main) Git commands and best practices update
+a3626e8 include them
+a6f2ebf Flask Skeleton and references update
+d24bc19 flaskReferences update and skeleton
+d6fdc8c upload Flask Skeleton + References
+4a3a712 include new references
+```
+* `git log --oneline --graph` Displays a visual representation of how the branches and commits were created
+```bash
+* bd8cd6c Update FlaskReferences.md
+*   6268997 fixing merge conflict
+|\  
+| * f49e87d Update FlaskReferences.md
+* | d604d97 making merge conflit again
+|/  
+* 8c6a11c my local commmit
+```
 
 ## git checkout HEAD filename
 `git checkout HEAD filename` Discards changes in the working directory.
