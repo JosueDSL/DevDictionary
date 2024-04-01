@@ -10,6 +10,10 @@ sudo apt install postgresql postgresql-contrib
 Ensure that the service is started:
 `sudo systemctl start postgresql.service`
 
+### Start PostgreSQL Server 
+After installation, you need to start the PostgreSQL server. On most systems, you can do this using a command like:
+`sudo service postgresql start`
+
 ### Roles - Create user
 Switch over to the postgres account on your server by running the following command: 
 ```bash
@@ -28,6 +32,14 @@ If, instead, you prefer to use sudo for each command without switching from your
 $ sudo -u postgres createuser --interactive
 ```
 The script will prompt you with some choices and, based on your responses, execute the correct Postgres commands to create a user to your specifications.
+
+### Alternative way to create the user
+Once that you're in the psql prompt, you can create a new user using the CREATE ROLE command.
+`CREATE ROLE user_name WITH LOGIN PASSWORD 'securepassword';`
+
+**GRANT PRIVILEGES**
+If you want to grant specific privileges to the user, you can do so using the GRANT command. For example, to grant all privileges on a specific database to the user "john", you can do:
+`GRANT ALL PRIVILEGES ON DATABASE dbname TO user-name;`
 
 ### Creating a New Database
 If you are logged in as the postgres account, you would type something like the following:
