@@ -89,9 +89,9 @@ PreUp = sysctl -w net.ipv4.ip_forward=1
 
 !!!!!!!!!!!!!  =================    REPLACE *etho* with your net run: ip link  =============== !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-PostUp = iptables -I INPUT -p udp --dport 51820 -j ACCEPT; iptables -t nat -I POSTROUTING 1 -s 10.0.0.0/24 -o eth0 -j MASQUERADE; iptables -I INPUT 1 -i wg0 -j ACCEPT; iptables -I FORWARD 1 -i eth0 -o wg0 -j ACCEPT; iptables -I FORWARD 1 -i wg0 -o eth0 -j ACCEPT
+PostUp = iptables -I INPUT -p udp --dport 51820 -j ACCEPT; iptables -t nat -I POSTROUTING 1 -s 10.16.0.0/24 -o eth0 -j MASQUERADE; iptables -I INPUT 1 -i wg0 -j ACCEPT; iptables -I FORWARD 1 -i eth0 -o wg0 -j ACCEPT; iptables -I FORWARD 1 -i wg0 -o eth0 -j ACCEPT
 
-PostDown = iptables -D INPUT -p udp --dport 51820 -j ACCEPT; iptables -t nat -D POSTROUTING 1 -s 10.0.0.0/24 -o eth0 -j MASQUERADE; iptables -D INPUT 1 -i wg0 -j ACCEPT; iptables -D FORWARD 1 -i eth0 -o wg0 -j ACCEPT; iptables -D FORWARD 1 -i wg0 -o eth0 -j ACCEPT
+PostDown = iptables -D INPUT -p udp --dport 51820 -j ACCEPT; iptables -t nat -D POSTROUTING 1 -s 10.16.0.0/24 -o eth0 -j MASQUERADE; iptables -D INPUT 1 -i wg0 -j ACCEPT; iptables -D FORWARD 1 -i eth0 -o wg0 -j ACCEPT; iptables -D FORWARD 1 -i wg0 -o eth0 -j ACCEPT
 
 Client 1:
 [Peer]
@@ -111,9 +111,9 @@ ListenPort = 51820
 PrivateKey = Server-Priv-key
 PreUp = sysctl -w net.ipv4.ip_forward=1
 
-PostUp = iptables -I INPUT -p udp --dport 51820 -j ACCEPT; iptables -t nat -I POSTROUTING 1 -s 10.0.0.0/24 -o eth0 -j MASQUERADE; iptables -I INPUT 1 -i wg0 -j ACCEPT; iptables -I FORWARD 1 -i eth0 -o wg0 -j ACCEPT; iptables -I FORWARD 1 -i wg0 -o eth0 -j ACCEPT
+PostUp = iptables -I INPUT -p udp --dport 51820 -j ACCEPT; iptables -t nat -I POSTROUTING 1 -s 10.16.0.0/24 -o eth0 -j MASQUERADE; iptables -I INPUT 1 -i wg0 -j ACCEPT; iptables -I FORWARD 1 -i eth0 -o wg0 -j ACCEPT; iptables -I FORWARD 1 -i wg0 -o eth0 -j ACCEPT
 
-PostDown = iptables -D INPUT -p udp --dport 51820 -j ACCEPT; iptables -t nat -D POSTROUTING 1 -s 10.0.0.0/24 -o eth0 -j MASQUERADE; iptables -D INPUT 1 -i wg0 -j ACCEPT; iptables -D FORWARD 1 -i eth0 -o wg0 -j ACCEPT; iptables -D FORWARD 1 -i wg0 -o eth0 -j ACCEPT
+PostDown = iptables -D INPUT -p udp --dport 51820 -j ACCEPT; iptables -t nat -D POSTROUTING 1 -s 10.16.0.0/24 -o eth0 -j MASQUERADE; iptables -D INPUT 1 -i wg0 -j ACCEPT; iptables -D FORWARD 1 -i eth0 -o wg0 -j ACCEPT; iptables -D FORWARD 1 -i wg0 -o eth0 -j ACCEPT
 
 [Peer]
 PublicKey =
@@ -187,9 +187,9 @@ ListenPort = 51820
 PrivateKey = Server-Priv-key
 PreUp = sysctl -w net.ipv4.ip_forward=1
 
-PostUp = iptables -I INPUT -p udp --dport 51820 -j ACCEPT; iptables -t nat -I POSTROUTING 1 -s 10.0.0.0/24 -o eth0 -j MASQUERADE; iptables -I INPUT 1 -i wg0 -j ACCEPT; iptables -I FORWARD 1 -i eth0 -o wg0 -j ACCEPT; iptables -I FORWARD 1 -i wg0 -o eth0 -j ACCEPT
+PostUp = iptables -I INPUT -p udp --dport 51820 -j ACCEPT; iptables -t nat -I POSTROUTING 1 -s 10.16.0.0/24 -o eth0 -j MASQUERADE; iptables -I INPUT 1 -i wg0 -j ACCEPT; iptables -I FORWARD 1 -i eth0 -o wg0 -j ACCEPT; iptables -I FORWARD 1 -i wg0 -o eth0 -j ACCEPT
 
-PostDown = iptables -D INPUT -p udp --dport 51820 -j ACCEPT; iptables -t nat -D POSTROUTING 1 -s 10.0.0.0/24 -o eth0 -j MASQUERADE; iptables -D INPUT 1 -i wg0 -j ACCEPT; iptables -D FORWARD 1 -i eth0 -o wg0 -j ACCEPT; iptables -D FORWARD 1 -i wg0 -o eth0 -j ACCEPT
+PostDown = iptables -D INPUT -p udp --dport 51820 -j ACCEPT; iptables -t nat -D POSTROUTING 1 -s 10.16.0.0/24 -o eth0 -j MASQUERADE; iptables -D INPUT 1 -i wg0 -j ACCEPT; iptables -D FORWARD 1 -i eth0 -o wg0 -j ACCEPT; iptables -D FORWARD 1 -i wg0 -o eth0 -j ACCEPT
 
 [Peer]
 PublicKey = Client-Public-Key
