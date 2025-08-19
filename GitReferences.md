@@ -148,3 +148,11 @@ $ git config --global alias.glop "log --pretty=format:"%h %s" --graph"
 ```
 Once the aliases are configured, next time you want to check out to another branch you could type the command:
 `$ git co example_branch`
+
+## set default push behaviour
+Pushes your current branch to the remote with the same name. To avoid having to do `git push origin HEAD` everytime you publish to the remote.
+Run this once to set he global config:
+```bash
+git config --global push.default current
+```
+
